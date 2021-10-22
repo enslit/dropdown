@@ -1,26 +1,14 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import SingleCombobox from "./components/SingleCombobox";
+import MultipleCombobox from "./components/MultipleCombobox";
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className={'app'}>
+      <h2>Single</h2>
+      <SingleCombobox />
+      <h2>Multiple</h2>
+      <MultipleCombobox />
     </div>
   );
 }
-
-export default App;
