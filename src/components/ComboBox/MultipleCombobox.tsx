@@ -7,21 +7,22 @@ type Props<T> = {
   isError: boolean
   isDisabled: boolean
   title: string
+  rowHeight: number
 
+  value: T[]
   options: T[]
-  value: T
-  onChange: (value: T) => void
+  onChange: (value: T[]) => void
 
   rendererRow: RendererDropdownRowCallback<T>
   rendererLabel: (value: T) => string
   rendererEmptySearchResult: () => JSX.Element | string
+  rendererSelectAll: () => JSX.Element
 
   children: JSX.Element | string
   className?: string
 }
 
-
-function SingleCombobox<OptionType>(props: Props<OptionType>): JSX.Element {
+function MultipleCombobox<OptionType>(props: Props<OptionType>) {
   const [isDropdownOpen, setDropdownOpen] = useState<boolean>(props.initialOpen || false);
   const [filteredList, setFilteredList] = useState<OptionType[]>(props.options);
   const [searchValue, setSearchValue] = useState<string>('');
@@ -31,42 +32,30 @@ function SingleCombobox<OptionType>(props: Props<OptionType>): JSX.Element {
   }, [])
 
   const rowRenderer = useCallback((index: number): JSX.Element | string => {
-    const isSelected: boolean = filteredList[index] === props.value
+    const isSelected: boolean = props.value.includes(filteredList[index])
 
     return props.rendererRow(filteredList, index, isSelected, setDropdownOpen)
   }, [filteredList, props]);
 
-  const handleClose = useCallback((): void => {
+  const handleClose = useCallback(() => {
     setDropdownOpen(false)
   }, [])
-
-  const handleWheelDown = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
-    const idx = props.options.findIndex((el) => el === props.value)
-
-    if (idx < props.options.length - 1) {
-      props.onChange(props.options[idx + 1])
-    }
-  }, [props]);
-
-  const handleWheelUp = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
-    const idx = props.options.findIndex((el) => el === props.value)
-
-    if (idx > 0) {
-      props.onChange(props.options[idx - 1])
-    }
-  }, [props]);
 
   const handleSearch = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
     setSearchValue(e.target.value);
   }, [])
 
   useEffect(() => {
-    setFilteredList(props.options.filter(el => props.rendererLabel(el).toLowerCase().includes(searchValue.toLowerCase())))
+    setFilteredList(props.options.filter(el =>
+      props.rendererLabel(el)
+        .toLowerCase()
+        .includes(searchValue.toLowerCase())
+    ))
   }, [props.options, searchValue]);
 
   useEffect(() => {
-    if (!isDropdownOpen) {
-      setSearchValue('');
+    if (isDropdownOpen) {
+      setSearchValue('')
     }
   }, [isDropdownOpen]);
 
@@ -74,23 +63,25 @@ function SingleCombobox<OptionType>(props: Props<OptionType>): JSX.Element {
     <ComboBox
       title={props.title}
       className={props.className}
-      isOpen={isDropdownOpen}
-      onClick={handleClick}
       isError={props.isError}
       isDisabled={props.isDisabled}
+      isOpen={isDropdownOpen}
       rowsCount={filteredList.length}
-      rowHeight={30}
+      rowHeight={props.rowHeight}
       rowRenderer={rowRenderer}
-      onWheelDown={handleWheelDown}
-      onWheelUp={handleWheelUp}
+      selectAllRenderer={searchValue ? () => '' : props.rendererSelectAll}
+      onClick={handleClick}
       onChangeSearch={handleSearch}
       onClose={handleClose}
       searchValue={searchValue}
       noSearchResult={props.rendererEmptySearchResult}
+      onWheelDown={() => {}}
+      onWheelUp={() => {}}
     >
       {props.children}
     </ComboBox>
   )
+
 }
 
-export default SingleCombobox
+export default MultipleCombobox

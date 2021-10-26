@@ -1,15 +1,13 @@
 import React, {useEffect, useMemo, useState} from "react";
 import {generateData, generateObjectData, randomInRange} from "./utils";
-import {ParamNotation} from "./types/ParamNotation";
-import ParamPickerSingle from "./components/ComboBox/ParamPickerSingle";
-import ParamPickerMultiple from "./components/ComboBox/ParamPickerMultiple";
-import SimpleCombobox from "./components/ComboBox/SimpleCombobox";
+import {ParamNotation} from "./components/Pickers/types/ParamNotation";
+import ParamPickerSingle from "./components/Pickers/ParamPickerSingle";
+import ParamPickerMultiple from "./components/Pickers/ParamPickerMultiple";
+import SimpleCombobox from "./components/Pickers/SimpleCombobox";
 
 export default function App() {
-  const [resetTrigger, setResetTrigger] = useState(0)
-
-  const stringOptions = useMemo<string[]>(() => generateData(randomInRange(10, 50)), [resetTrigger]);
-  const options = useMemo<ParamNotation[]>(() => generateObjectData(randomInRange(10, 50)), [resetTrigger]);
+  const stringOptions = useMemo<string[]>(() => generateData(randomInRange(10, 50)), []);
+  const options = useMemo<ParamNotation[]>(() => generateObjectData(randomInRange(10, 50)), []);
 
   const [paramSingleValue, setParamSingleValue] = useState<ParamNotation>(options[0])
   const [multipleValue, setMultipleValue] = useState<ParamNotation[]>([])
@@ -22,8 +20,6 @@ export default function App() {
 
   return (
     <div className={'app'}>
-      <button onClick={() => setResetTrigger(prev => prev + 1)}>Reset</button>
-
       <h2>Param picker single</h2>
       <ParamPickerSingle
         title={'Param picker single'}

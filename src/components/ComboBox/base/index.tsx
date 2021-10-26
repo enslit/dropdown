@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import Dropdown from "./Dropdown";
 
-import ArrowDown from "../../../../icons/ArrowDown";
+import ArrowDown from "./icons/ArrowDown";
 import ComboBoxContainer from "./styledComponents/ComboBoxContainer";
 import ValueContainer from "./styledComponents/ValueContainer";
 import ValueScrollWrapper from "./styledComponents/ValueScrollWrapper";

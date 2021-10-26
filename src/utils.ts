@@ -1,21 +1,11 @@
 import faker from "faker";
-import {ParamNotation} from "./types/ParamNotation";
+import {ParamNotation} from "./components/Pickers/types/ParamNotation";
 
 export const generateData = (cnt: number): string[] => {
   const data: string[] = [];
 
   for (let i = 0; i < cnt; i++) {
     data.push(faker.name.findName());
-  }
-
-  return data;
-};
-
-export const generateLongData = (cnt: number, words = 5): string[] => {
-  const data: string[] = [];
-
-  for (let i = 0; i < cnt; i++) {
-    data.push(faker.lorem.words(words));
   }
 
   return data;

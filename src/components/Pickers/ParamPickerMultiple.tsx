@@ -1,12 +1,12 @@
 import React, {FC, useCallback} from 'react'
-import {ParamNotation} from "../../types/ParamNotation";
+import {ParamNotation} from "./types/ParamNotation";
 import {isEqual} from "lodash";
-import DropdownItem from "../../styledComponents/DropdownItem";
-import {RendererDropdownRowCallback} from "./abstract/types/RendererDropdownRowCallback";
+import DropdownItem from "./styledComponents/DropdownItem";
+import {RendererDropdownRowCallback} from "../ComboBox/types/RendererDropdownRowCallback";
 import {getParamLabel} from "../../utils";
-import Chip from "../../styledComponents/Chip";
-import MultipleCombobox from "./abstract/MultipleCombobox";
-import ComboboxValue from "./abstract/base/styledComponents/ComboboxValue";
+import Chip from "./styledComponents/Chip";
+import MultipleCombobox from "../ComboBox/MultipleCombobox";
+import ComboboxValue from "../ComboBox/base/styledComponents/ComboboxValue";
 
 type Props = {
   initialOpen: boolean
@@ -72,6 +72,7 @@ const ParamPickerMultiple: FC<Props> = (props) => {
   return (
     <MultipleCombobox
       {...props}
+      rowHeight={30}
       rendererLabel={(param: ParamNotation) => getParamLabel(param)}
       rendererRow={rendererRow}
       rendererEmptySearchResult={rendererEmptySearchResult}

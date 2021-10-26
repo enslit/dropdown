@@ -1,6 +1,6 @@
 import React, {FC} from 'react'
-import SingleCombobox from "./abstract/SingleCombobox";
-import {RendererDropdownRowCallback} from "./abstract/types/RendererDropdownRowCallback";
+import SingleCombobox from "../ComboBox/SingleCombobox";
+import {RendererDropdownRowCallback} from "../ComboBox/types/RendererDropdownRowCallback";
 
 type Props = {
   initialOpen: boolean
@@ -35,6 +35,7 @@ const SimpleCombobox: FC<Props> = (props) => {
   return (
     <SingleCombobox
       {...props}
+      rowHeight={14}
       rendererRow={rendererRow}
       rendererLabel={rendererLabel}
       rendererEmptySearchResult={rendererEmptySearchResult}

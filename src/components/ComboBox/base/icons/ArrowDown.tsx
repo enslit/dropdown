@@ -3,8 +3,6 @@ import React from "react";
 const ArrowDown = () => {
   return (
     <svg
-      // fill="#787878"
-      // stroke="#787878"
       viewBox="0 0 12 7"
       style={{
         minWidth: "12px",

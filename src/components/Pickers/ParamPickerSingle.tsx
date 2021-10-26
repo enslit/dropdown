@@ -1,10 +1,10 @@
 import React, {FC, useCallback} from 'react'
-import {ParamNotation} from "../../types/ParamNotation";
-import ComboboxValue from "./abstract/base/styledComponents/ComboboxValue";
-import SingleCombobox from "./abstract/SingleCombobox";
+import {ParamNotation} from "./types/ParamNotation";
+import ComboboxValue from "../ComboBox/base/styledComponents/ComboboxValue";
+import SingleCombobox from "../ComboBox/SingleCombobox";
 import {getParamLabel} from "../../utils";
-import DropdownItem from "../../styledComponents/DropdownItem";
-import {RendererDropdownRowCallback} from "./abstract/types/RendererDropdownRowCallback";
+import DropdownItem from "./styledComponents/DropdownItem";
+import {RendererDropdownRowCallback} from "../ComboBox/types/RendererDropdownRowCallback";
 
 type Props = {
   initialOpen: boolean
@@ -40,6 +40,7 @@ const ParamPickerSingle: FC<Props> = (props) => {
   return (
     <SingleCombobox
       {...props}
+      rowHeight={30}
       rendererLabel={(param: ParamNotation) => getParamLabel(param)}
       rendererRow={rowRenderer}
       rendererEmptySearchResult={noSearchResultRenderer}

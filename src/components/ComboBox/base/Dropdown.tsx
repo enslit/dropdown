@@ -1,5 +1,5 @@
 import React, {ChangeEvent, FC, MouseEventHandler, useCallback, useEffect, useState} from "react";
-import Search from "../../../../icons/Search";
+import Search from "./icons/Search";
 import DropdownBackdrop from "./styledComponents/dropdown/DropdownBackdrop";
 import DropdownList from "./styledComponents/dropdown/DropdownList";
 import DropdownContent from "./styledComponents/dropdown/DropdownContent";
