@@ -1,27 +1,28 @@
 import React, {ChangeEvent, FC, MouseEventHandler, useCallback, useEffect, useState} from "react";
-import Search from "../../icons/Search";
-import DropdownButtons from "./styledComponents/dropdown/DropdownButtons";
+import Search from "../../../../icons/Search";
 import DropdownBackdrop from "./styledComponents/dropdown/DropdownBackdrop";
 import DropdownList from "./styledComponents/dropdown/DropdownList";
 import DropdownContent from "./styledComponents/dropdown/DropdownContent";
 import DropdownRoot from "./styledComponents/dropdown/DropdownRoot";
 import SearchInput from "./styledComponents/dropdown/SearchInput";
 import SearchRow from "./styledComponents/dropdown/SearchRow";
+import DropdownHeader from "./styledComponents/dropdown/DropdownHeader";
+import DropdownTitle from "./styledComponents/dropdown/DropdownTitle";
+import DropdownBackButton from "./styledComponents/dropdown/DropdownBackButton";
 
 type Props = {
   valueContainerTop: number;
   valueContainerBottom: number;
   valueContainerHeight: number;
-  isMultiple: boolean;
   rowsCount: number;
   rowHeight: number;
   rowRenderer: (index: number) => string | JSX.Element;
-  selectAllRenderer: () => void;
+  selectAllRenderer?: () => void;
   onChangeSearch?: (e: ChangeEvent<HTMLInputElement>) => void;
-  onApply: () => void;
   onClose: () => void;
   searchValue?: string;
   noSearchResult?: () => string | JSX.Element;
+  title: string
 };
 
 const Dropdown: FC<Props> = (props) => {
@@ -72,6 +73,18 @@ const Dropdown: FC<Props> = (props) => {
   useEffect(() => {
     setDropdownHeight(calcHeight())
   }, [calcHeight])
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      e.key === 'Escape' && props.onClose()
+    }
+
+    window.addEventListener('keydown', handler)
+    return () => {
+      window.removeEventListener('keydown', handler)
+    };
+  }, []);
+
   
   const searchElement = props.onChangeSearch && (
     <>
@@ -84,13 +97,14 @@ const Dropdown: FC<Props> = (props) => {
           value={props.searchValue}
         />
       </SearchRow>
-      {props.isMultiple && (
-        <DropdownButtons>
-          <button onClick={props.onApply}>Apply</button>
-          <button onClick={props.onClose}>Cancel</button>
-        </DropdownButtons>
-      )}
     </>
+  )
+
+  const titleElement = (
+    <DropdownHeader>
+      <DropdownBackButton onClick={() => props.onClose()}>Back</DropdownBackButton>
+      <DropdownTitle>{props.title}</DropdownTitle>
+    </DropdownHeader>
   )
 
   return (
@@ -102,9 +116,10 @@ const Dropdown: FC<Props> = (props) => {
         valueContainerHeight={props.valueContainerHeight}
       >
         <DropdownContent>
+          {titleElement}
           {direction === 'bottom' && searchElement}
           <DropdownList isSearchable={!!props.onChangeSearch}>
-            {props.isMultiple && props.selectAllRenderer()}
+            {props.selectAllRenderer && props.selectAllRenderer()}
             {props.rowsCount > 0
               ? new Array(props.rowsCount).fill("_").map((_, i) => <li key={i}>{props.rowRenderer(i)}</li>)
               : <li>{props.noSearchResult ? props.noSearchResult() : 'Ничего не найдено'}</li>

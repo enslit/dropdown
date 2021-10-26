@@ -9,7 +9,7 @@ const DropdownBackdrop = styled.div`
   background-color: transparent;
   z-index: 100;
 
-  @media screen and (max-width: 1200px) {
+  @media screen and (max-width: 1199px) {
     background-color: rgba(0,0,0,.5);
   }
 `

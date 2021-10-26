@@ -19,8 +19,9 @@ const DropdownRoot = styled.div<DropdownRootProps>`
   right: 0;
   z-index: 101;
   height: ${({ height, valueContainerHeight }) => (height === "auto" ? 'auto' : height - (valueContainerHeight / 2) + "px")};
+  transition: height 200ms ease-in-out;
   
-  @media screen and (min-width: 1200px) {
+  @media screen and (min-width: 1199px) {
     ${({ direction }) => direction === 'top' ? DropdownDirectionTopMixin : DropdownDirectionBottomMixin};
   }
 
@@ -28,7 +29,7 @@ const DropdownRoot = styled.div<DropdownRootProps>`
     ${DropdownRootTabletMixin};
   }
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 767px) {
     ${DropdownRootMobileMixin};
   }
 `;

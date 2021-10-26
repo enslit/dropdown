@@ -1,0 +1,1 @@
+export type ParamNotation = {measurementType: number, stationId: number, aggregateId: number, parameterId: number}

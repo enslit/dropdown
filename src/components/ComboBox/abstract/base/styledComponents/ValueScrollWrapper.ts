@@ -4,6 +4,7 @@ const ValueScrollWrapper = styled.div`
   width: 100%;
   position: relative;
   overflow-y: hidden;
+  padding: 0 8px;
   
   //&:after {
   //  pointer-events: none;
