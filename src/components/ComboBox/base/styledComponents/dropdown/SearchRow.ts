@@ -8,6 +8,7 @@ const SearchRow = styled.div<{ direction: 'top' | 'bottom' }>`
   padding: 8px 16px;
   border-bottom: ${({ direction }) => direction === 'bottom' ? '1px solid rgba(0,0,0,.2)' : 'none'};
   border-top: ${({ direction }) => direction !== 'bottom' ? '1px solid rgba(0,0,0,.2)' : 'none'};
+  box-sizing: border-box;
 
   & svg {
     fill: gray;

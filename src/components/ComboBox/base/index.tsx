@@ -84,9 +84,11 @@ const ComboBox = (props: ComboBoxProps): JSX.Element => {
       {isOpen && valueContainerRect && (
         <Dropdown
           title={title}
+          valueContainerLeft={valueContainerRect.left}
           valueContainerTop={valueContainerRect.top}
           valueContainerBottom={valueContainerRect.bottom}
           valueContainerHeight={valueContainerRect.height}
+          valueContainerWidth={valueContainerRect.width}
           selectAllRenderer={selectAllRenderer}
           rowsCount={rowsCount}
           rowHeight={rowHeight}

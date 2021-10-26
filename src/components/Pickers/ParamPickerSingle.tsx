@@ -3,7 +3,7 @@ import {ParamNotation} from "./types/ParamNotation";
 import ComboboxValue from "../ComboBox/base/styledComponents/ComboboxValue";
 import SingleCombobox from "../ComboBox/SingleCombobox";
 import {getParamLabel} from "../../utils";
-import DropdownItem from "./styledComponents/DropdownItem";
+import DropdownItem from "../ComboBox/utilsStyledComponents/DropdownItem";
 import {RendererDropdownRowCallback} from "../ComboBox/types/RendererDropdownRowCallback";
 
 type Props = {

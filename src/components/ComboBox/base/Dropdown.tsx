@@ -9,11 +9,14 @@ import SearchRow from "./styledComponents/dropdown/SearchRow";
 import DropdownHeader from "./styledComponents/dropdown/DropdownHeader";
 import DropdownTitle from "./styledComponents/dropdown/DropdownTitle";
 import DropdownBackButton from "./styledComponents/dropdown/DropdownBackButton";
+import {createPortal} from "react-dom";
 
 type Props = {
+  valueContainerLeft: number;
   valueContainerTop: number;
   valueContainerBottom: number;
   valueContainerHeight: number;
+  valueContainerWidth: number;
   rowsCount: number;
   rowHeight: number;
   rowRenderer: (index: number) => string | JSX.Element;
@@ -86,37 +89,34 @@ const Dropdown: FC<Props> = (props) => {
   }, []);
 
   
-  const searchElement = props.onChangeSearch && (
-    <>
-      <SearchRow direction={direction}>
-        <Search />
-        <SearchInput
-          type="text"
-          placeholder="Поиск"
-          onChange={props.onChangeSearch}
-          value={props.searchValue}
-        />
-      </SearchRow>
-    </>
+  const searchElement = (
+    <SearchRow direction={direction}>
+      <Search />
+      <SearchInput
+        type="text"
+        placeholder="Поиск"
+        onChange={props.onChangeSearch}
+        value={props.searchValue}
+      />
+    </SearchRow>
   )
 
-  const titleElement = (
-    <DropdownHeader>
-      <DropdownBackButton onClick={() => props.onClose()}>Back</DropdownBackButton>
-      <DropdownTitle>{props.title}</DropdownTitle>
-    </DropdownHeader>
-  )
-
-  return (
+  const el = (
     <>
       <DropdownBackdrop onClick={handleClickDropdown} />
       <DropdownRoot
         direction={direction}
         height={dropdownHeight}
+        width={props.valueContainerWidth}
+        top={props.valueContainerTop}
+        left={props.valueContainerLeft}
         valueContainerHeight={props.valueContainerHeight}
       >
         <DropdownContent>
-          {titleElement}
+          <DropdownHeader>
+            <DropdownBackButton onClick={() => props.onClose()}>Back</DropdownBackButton>
+            <DropdownTitle>{props.title}</DropdownTitle>
+          </DropdownHeader>
           {direction === 'bottom' && searchElement}
           <DropdownList isSearchable={!!props.onChangeSearch}>
             {props.selectAllRenderer && props.selectAllRenderer()}
@@ -129,7 +129,9 @@ const Dropdown: FC<Props> = (props) => {
         </DropdownContent>
       </DropdownRoot>
     </>
-  );
+  )
+
+  return createPortal(el, document.body);
 };
 
 export default Dropdown;

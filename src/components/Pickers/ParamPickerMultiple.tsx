@@ -1,10 +1,10 @@
 import React, {FC, useCallback} from 'react'
 import {ParamNotation} from "./types/ParamNotation";
 import {isEqual} from "lodash";
-import DropdownItem from "./styledComponents/DropdownItem";
+import DropdownItem from "../ComboBox/utilsStyledComponents/DropdownItem";
 import {RendererDropdownRowCallback} from "../ComboBox/types/RendererDropdownRowCallback";
 import {getParamLabel} from "../../utils";
-import Chip from "./styledComponents/Chip";
+import Chip from "../ComboBox/utilsStyledComponents/Chip";
 import MultipleCombobox from "../ComboBox/MultipleCombobox";
 import ComboboxValue from "../ComboBox/base/styledComponents/ComboboxValue";
 
