@@ -8,6 +8,7 @@ import DropdownRootMobileMixin from "../../mixins/dropdown/DropdownRootMobileMix
 type DropdownRootProps = HTMLAttributes<HTMLDivElement> & {
   valueContainerHeight: number;
   direction: "top" | "bottom";
+  innerHeight: number
   height: number | "auto";
   top: number;
   left: number;
@@ -15,12 +16,14 @@ type DropdownRootProps = HTMLAttributes<HTMLDivElement> & {
 };
 
 const DropdownRoot = styled.div<DropdownRootProps>`
+  font-size: 12px;
+  color: #646464;
   box-sizing: border-box;
   position: absolute;
   overflow: hidden;
   left: ${({ left }) => left}px;
   width: ${({ width }) => width}px;
-  z-index: 101;
+  z-index: 2;
   height: ${({ height, valueContainerHeight }) => (height === "auto" ? 'auto' : height - (valueContainerHeight / 2) + "px")};
   transition: height 200ms ease-in-out;
   
