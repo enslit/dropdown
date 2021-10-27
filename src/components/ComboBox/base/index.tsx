@@ -58,7 +58,7 @@ const ComboBox = (props: ComboBoxProps): JSX.Element => {
   const [containerInitialized, setContainerInitialized] = useState(false)
   const [valueContainerRect, setValueContainerRect] = useState<DOMRect | undefined>(undefined);
   const [valueContainerHeight, setValueContainerHeight] = useState<number>(0);
-  const [owner, setOwner] = useState<Document>()
+  const [ownerWindow, setOwnerWindow] = useState<Window>()
   const [resizeTrigger, setResizeTrigger] = useState<number>(0)
 
   const rootRef = useCallback((node: HTMLDivElement | null) => {
@@ -67,7 +67,7 @@ const ComboBox = (props: ComboBoxProps): JSX.Element => {
     const pos = node.getBoundingClientRect()
     setValueContainerRect(pos);
 
-    if (!owner) setOwner(node.ownerDocument)
+    if (!ownerWindow) setOwnerWindow(node.ownerDocument?.defaultView?.window || window)
     if (pos.height !== 0) setValueContainerHeight(pos.height)
     if (!containerInitialized) setContainerInitialized(true)
   }, [isOpen, children, resizeTrigger, containerInitialized]);
@@ -82,20 +82,20 @@ const ComboBox = (props: ComboBoxProps): JSX.Element => {
 
   useEffect(() => {
     let isListenerHasBeenSet = false
-    if (!owner || !owner.defaultView) return
+    if (!ownerWindow) return
     const handler = throttle(() => setResizeTrigger(prev => prev + 1), 200)
 
     isListenerHasBeenSet = true
-    owner.defaultView.window.addEventListener('resize', handler)
+    ownerWindow.addEventListener('resize', handler)
 
     return () => {
-      if (isListenerHasBeenSet && owner.defaultView) {
-        return owner.defaultView.window.removeEventListener('resize', handler)
+      if (isListenerHasBeenSet) {
+        return ownerWindow.removeEventListener('resize', handler)
       }
     }
-  }, [owner])
+  }, [ownerWindow])
 
-  const value = valueContainerRect && (
+  const valueBoxElement = valueContainerRect && (
     <ValueContainer
       pos={valueContainerRect}
       isOpen={isOpen}
@@ -117,19 +117,15 @@ const ComboBox = (props: ComboBoxProps): JSX.Element => {
         <>
           {props.isOpen
             ? <div style={{ height: valueContainerHeight, width: valueContainerRect.width }} />
-            : value
+            : valueBoxElement
           }
-          {isOpen && owner && value && (
+          {isOpen && ownerWindow && valueBoxElement && (
             <Dropdown
               resizeTrigger={resizeTrigger}
-              owner={owner}
-              value={value}
+              ownerWindow={ownerWindow}
+              valueBoxElement={valueBoxElement}
               title={title}
-              valueContainerLeft={valueContainerRect.left}
-              valueContainerTop={valueContainerRect.top}
-              valueContainerBottom={valueContainerRect.top + valueContainerHeight}
-              valueContainerHeight={valueContainerHeight}
-              valueContainerWidth={valueContainerRect.width}
+              valueContainerRect={valueContainerRect}
               selectAllRenderer={selectAllRenderer}
               rowsCount={rowsCount}
               rowHeight={rowHeight}

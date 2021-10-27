@@ -13,13 +13,9 @@ import {createPortal} from "react-dom";
 
 type Props = {
   resizeTrigger: number;
-  owner: Document;
-  value: JSX.Element;
-  valueContainerLeft: number;
-  valueContainerTop: number;
-  valueContainerBottom: number;
-  valueContainerHeight: number;
-  valueContainerWidth: number;
+  ownerWindow: Window;
+  valueBoxElement: JSX.Element;
+  valueContainerRect: DOMRect;
   rowsCount: number;
   rowHeight: number;
   rowRenderer: (index: number) => string | JSX.Element;
@@ -33,12 +29,12 @@ type Props = {
 
 const Dropdown: FC<Props> = (props) => {
   const getDirection = useCallback(() => (): 'top' | 'bottom' => {
-    if (props.valueContainerTop > window.innerHeight / 2) {
+    if (props.valueContainerRect.top > window.innerHeight / 2) {
       const listHeight = props.rowHeight * props.rowsCount
       const searchInputHeight = !!props.onChangeSearch ? 32 : 0;
       const dropdownContentHeight = listHeight + searchInputHeight;
 
-      const maxHeightToBottom = window.innerHeight - props.valueContainerTop - 8;
+      const maxHeightToBottom = window.innerHeight - props.valueContainerRect.top - 8;
 
       if (dropdownContentHeight > maxHeightToBottom) {
         return 'top';
@@ -46,25 +42,24 @@ const Dropdown: FC<Props> = (props) => {
     }
 
     return 'bottom';
-  }, [props.valueContainerTop])
+  }, [props.valueContainerRect.top])
   
   const [direction, setDirection] = useState<"top" | "bottom">(getDirection());
 
   const calcHeight = useCallback(() => (): number | 'auto' => {
-    const ownerWindow = props.owner?.defaultView?.window || window
 
     const listHeight = props.rowHeight * props.rowsCount
     const searchInputHeight = props.onChangeSearch ? 32 : 0;
     const dropdownContentHeight = listHeight + searchInputHeight;
 
-    if (direction === 'bottom' && props.valueContainerBottom + dropdownContentHeight > ownerWindow.innerHeight - 8) {
-      return ownerWindow.innerHeight - props.valueContainerTop - 8
-    } else if (direction === 'top' && dropdownContentHeight > props.valueContainerTop - 8) {
-      return ownerWindow.innerHeight - (ownerWindow.innerHeight - props.valueContainerBottom) - 8
+    if (direction === 'bottom' && props.valueContainerRect.bottom + dropdownContentHeight > props.ownerWindow.innerHeight - 8) {
+      return props.ownerWindow.innerHeight - props.valueContainerRect.top - 8
+    } else if (direction === 'top' && dropdownContentHeight > props.valueContainerRect.top - 8) {
+      return props.ownerWindow.innerHeight - (props.ownerWindow.innerHeight - props.valueContainerRect.bottom) - 8
     }
 
     return 'auto';
-  }, [props.rowHeight, props.rowsCount, props.onChangeSearch, props.valueContainerBottom, props.valueContainerTop, direction, props.resizeTrigger])
+  }, [props.rowHeight, props.rowsCount, props.onChangeSearch, props.valueContainerRect.bottom, props.valueContainerRect.top, direction, props.resizeTrigger])
 
   const handleClickBackdrop: MouseEventHandler<HTMLDivElement> = (event): void => {
     if ( event.target === event.currentTarget) {
@@ -83,16 +78,13 @@ const Dropdown: FC<Props> = (props) => {
   }, [calcHeight])
 
   useEffect(() => {
-    if (!props.owner.defaultView) return
-
     const handler = (e: KeyboardEvent) => {
       e.key === 'Escape' && props.onClose()
     }
 
-    props.owner.defaultView.window.addEventListener('keydown', handler)
+    props.ownerWindow.addEventListener('keydown', handler)
     return () => {
-      if (!props.owner.defaultView) return
-      props.owner.defaultView.window.removeEventListener('keydown', handler)
+      props.ownerWindow.removeEventListener('keydown', handler)
     };
   }, []);
 
@@ -112,15 +104,15 @@ const Dropdown: FC<Props> = (props) => {
   const el = (
     <>
       <DropdownBackdrop onClick={handleClickBackdrop} />
-      {props.value}
+      {props.valueBoxElement}
       <DropdownRoot
-        innerHeight={props.owner?.defaultView?.window.innerHeight || window.innerHeight}
+        innerHeight={props.ownerWindow.innerHeight}
         direction={direction}
         height={dropdownHeight}
-        width={props.valueContainerWidth}
-        top={props.valueContainerTop}
-        left={props.valueContainerLeft}
-        valueContainerHeight={props.valueContainerHeight}
+        width={props.valueContainerRect.width}
+        top={props.valueContainerRect.top}
+        left={props.valueContainerRect.left}
+        valueContainerHeight={props.valueContainerRect.height}
       >
         <DropdownContent>
           <DropdownHeader>
@@ -141,7 +133,7 @@ const Dropdown: FC<Props> = (props) => {
     </>
   )
 
-  return createPortal(el, props.owner.body);
+  return createPortal(el, props.ownerWindow.document.body);
 };
 
 export default Dropdown;
