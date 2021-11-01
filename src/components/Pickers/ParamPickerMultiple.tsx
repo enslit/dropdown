@@ -1,12 +1,15 @@
 import React, {FC, useCallback} from 'react'
 import {ParamNotation} from "./types/ParamNotation";
-import {isEqual} from "lodash";
-import DropdownItem from "../ComboBox/utilsStyledComponents/DropdownItem";
-import {RendererDropdownRowCallback} from "../ComboBox/types/RendererDropdownRowCallback";
 import {getParamLabel} from "../../utils";
 import Chip from "../ComboBox/utilsStyledComponents/Chip";
 import MultipleCombobox from "../ComboBox/MultipleCombobox";
 import ComboboxValue from "../ComboBox/base/styledComponents/ComboboxValue";
+import {RendererMultipleDropdownRowCallback} from "../ComboBox/types/RendererMultipleDropdownRowCallback";
+import {
+  defaultDropdownNoSearchResultRenderer,
+  defaultRendererMultipleDropdownRow,
+  defaultRendererSelectAll
+} from "../ComboBox/base/utils/callbacks";
 
 type Props = {
   initialOpen: boolean
@@ -22,47 +25,20 @@ type Props = {
 }
 
 const ParamPickerMultiple: FC<Props> = (props) => {
-  const rendererRow = useCallback<RendererDropdownRowCallback<ParamNotation>>((list, index, isSelected) => {
-    const handlerClick = () => {
-      const find = props.value.findIndex(el => isEqual(el, list[index]))
+  const rendererRow = useCallback<RendererMultipleDropdownRowCallback<ParamNotation>>(
+    defaultRendererMultipleDropdownRow<ParamNotation>(props.onChange, getParamLabel),
+    [props.onChange])
 
-      props.onChange(find !== -1
-        ? [
-          ...props.value.slice(0, find),
-          ...props.value.slice(find + 1),
-        ] : [...props.value, list[index]])
+  const rendererSelectAll = useCallback(() => {
+    const handleSelectAll = (selectedAll: boolean) => {
+      const value = selectedAll ? [] : [...props.options];
+      props.onChange(value)
     }
-
-    return (
-      <DropdownItem onClick={handlerClick} selected={isSelected}>
-        <input type="checkbox" checked={isSelected} onChange={() => {}}/>
-        {getParamLabel(list[index])}
-      </DropdownItem>
-    );
-  }, [props]);
-
-  const rendererSelectAll = useCallback((): JSX.Element => {
-    const handleSelectAll = () => {
-      props.onChange(props.value.length === props.options.length
-        ? []
-        : [...props.options])
-    }
-
-    return (
-      <DropdownItem onClick={handleSelectAll}>
-        <input
-          type="checkbox"
-          checked={props.value.length === props.options.length}
-          onChange={() => {}}
-        />
-        {props.value.length === props.options.length ? 'Снять' : 'Выбрать'} все
-      </DropdownItem>
-    )
+    
+    return defaultRendererSelectAll(handleSelectAll, props.value.length, props.options.length)
   }, [props])
 
-  const rendererEmptySearchResult = useCallback((): JSX.Element => {
-    return <DropdownItem>Ничего не найдено</DropdownItem>
-  }, [])
+  const rendererEmptySearchResult = useCallback(defaultDropdownNoSearchResultRenderer, [])
 
   const handleClickChip = useCallback((index: number) => (e: React.MouseEvent<HTMLSpanElement>) => {
     e.stopPropagation()

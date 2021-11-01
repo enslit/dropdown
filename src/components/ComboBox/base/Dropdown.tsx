@@ -1,4 +1,13 @@
-import React, {ChangeEvent, FC, MouseEventHandler, useCallback, useEffect, useState} from "react";
+import React, {
+  ChangeEvent,
+  FC,
+  MouseEventHandler,
+  UIEventHandler,
+  useCallback,
+  useEffect,
+  useMemo, useRef,
+  useState
+} from "react";
 import Search from "./icons/Search";
 import DropdownBackdrop from "./styledComponents/dropdown/DropdownBackdrop";
 import DropdownList from "./styledComponents/dropdown/DropdownList";
@@ -10,6 +19,7 @@ import DropdownHeader from "./styledComponents/dropdown/DropdownHeader";
 import DropdownTitle from "./styledComponents/dropdown/DropdownTitle";
 import DropdownBackButton from "./styledComponents/dropdown/DropdownBackButton";
 import {createPortal} from "react-dom";
+import DropdownListItem from "./styledComponents/dropdown/DropdownListItem";
 
 type Props = {
   resizeTrigger: number;
@@ -43,12 +53,12 @@ const Dropdown: FC<Props> = (props) => {
 
     return 'bottom';
   }, [props.valueContainerRect.top])
-  
+
   const [direction, setDirection] = useState<"top" | "bottom">(getDirection());
 
-  const calcHeight = useCallback(() => (): number | 'auto' => {
+  const calcHeight = useCallback(() => (): number => {
 
-    const listHeight = props.rowHeight * props.rowsCount
+    const listHeight = Math.max(props.rowHeight * props.rowsCount, props.rowHeight)
     const searchInputHeight = props.onChangeSearch ? 32 : 0;
     const dropdownContentHeight = listHeight + searchInputHeight;
 
@@ -58,7 +68,7 @@ const Dropdown: FC<Props> = (props) => {
       return props.ownerWindow.innerHeight - (props.ownerWindow.innerHeight - props.valueContainerRect.bottom) - 8
     }
 
-    return 'auto';
+    return props.valueContainerRect.height + dropdownContentHeight;
   }, [props.rowHeight, props.rowsCount, props.onChangeSearch, props.valueContainerRect.bottom, props.valueContainerRect.top, direction, props.resizeTrigger])
 
   const handleClickBackdrop: MouseEventHandler<HTMLDivElement> = (event): void => {
@@ -67,7 +77,13 @@ const Dropdown: FC<Props> = (props) => {
     }
   }
 
-  const [dropdownHeight, setDropdownHeight] = useState<number | "auto">(calcHeight());
+  const handleListScroll: UIEventHandler<HTMLDivElement> = (event) => {
+    setScrollTop(event.currentTarget.scrollTop)
+  }
+
+  const [dropdownHeight, setDropdownHeight] = useState<number>(calcHeight());
+  const [scrollTop, setScrollTop] = useState(0);
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setDirection(getDirection())
@@ -88,7 +104,36 @@ const Dropdown: FC<Props> = (props) => {
     };
   }, []);
 
-  
+  useEffect(() => {
+    if (listRef.current) listRef.current.scrollTo({top: 0, behavior: 'auto'})
+  }, [props.searchValue])
+
+  const slicedOptionList = useMemo(() => {
+    /* Если прокрутить выпадающий список пониже, а затем что-то ввести в строку поиска, возникает ситуация,
+    когда indexStart больше indexEnd так как scroll к этому моменту еще не обновился, а высота списка уже мешьше значения scrollTop.
+    Нужно пропустить вычисление когда возникает такая ситуация */
+    if (Math.floor(scrollTop / props.rowHeight) > props.rowsCount) return;
+
+    const indexStart = Math.floor(scrollTop / props.rowHeight);
+    const indexEnd = Math.min(
+      props.rowsCount - 1, // don't render past the end of the list
+      Math.floor((scrollTop + dropdownHeight) / props.rowHeight)
+    );
+    const offsetSelectAllRow = !props.searchValue && props.selectAllRenderer && indexStart === 0 ? 1 : 0
+
+    return new Array(indexEnd - indexStart + 1)
+      .fill("_")
+      .map((_, i) => (
+        <DropdownListItem
+          key={indexStart + i}
+          height={props.rowHeight}
+          top={(indexStart + i + offsetSelectAllRow) * props.rowHeight}
+        >
+          {props.rowRenderer(indexStart + i)}
+        </DropdownListItem>
+      ))
+  }, [dropdownHeight, props, scrollTop])
+
   const searchElement = (
     <SearchRow direction={direction}>
       <Search />
@@ -108,7 +153,7 @@ const Dropdown: FC<Props> = (props) => {
       <DropdownRoot
         innerHeight={props.ownerWindow.innerHeight}
         direction={direction}
-        height={dropdownHeight}
+        dropdownHeight={dropdownHeight}
         width={props.valueContainerRect.width}
         top={props.valueContainerRect.top}
         left={props.valueContainerRect.left}
@@ -120,13 +165,15 @@ const Dropdown: FC<Props> = (props) => {
             <DropdownTitle>{props.title}</DropdownTitle>
           </DropdownHeader>
           {direction === 'bottom' && searchElement}
-          <DropdownList isSearchable={!!props.onChangeSearch}>
-            {props.selectAllRenderer && props.selectAllRenderer()}
-            {props.rowsCount > 0
-              ? new Array(props.rowsCount).fill("_").map((_, i) => <li key={i}>{props.rowRenderer(i)}</li>)
-              : <li>{props.noSearchResult ? props.noSearchResult() : 'Ничего не найдено'}</li>
-            }
-          </DropdownList>
+          <div ref={listRef} onScroll={handleListScroll} style={{ overflowY: 'auto', height: '100%' }}>
+            <DropdownList isSearchable={!!props.onChangeSearch} height={props.rowHeight * props.rowsCount}>
+              {props.selectAllRenderer && props.selectAllRenderer()}
+              {props.rowsCount > 0
+                ? slicedOptionList
+                : <li>{props.noSearchResult ? props.noSearchResult() : 'Ничего не найдено'}</li>
+              }
+            </DropdownList>
+          </div>
           {direction !== 'bottom' && searchElement}
         </DropdownContent>
       </DropdownRoot>

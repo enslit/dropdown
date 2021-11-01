@@ -1,21 +1,23 @@
 import React, {ChangeEvent, useCallback, useEffect, useState} from "react";
 import ComboBox from "./base";
-import {RendererDropdownRowCallback} from "./types/RendererDropdownRowCallback";
+import {RendererSingleDropdownRowCallback} from "./types/RendererSingleDropdownRowCallback";
+import {defaultDropdownNoSearchResultRenderer, defaultRendererSingleDropdownRow} from "./base/utils/callbacks";
 
 type Props<T> = {
   initialOpen: boolean
   isError: boolean
   isDisabled: boolean
+  isWheelSelectionEnabled: boolean
   title: string
   rowHeight: number
 
   options: T[]
-  value: T
+  value: T | null
   onChange: (value: T) => void
 
-  rendererRow: RendererDropdownRowCallback<T>
   rendererLabel: (value: T) => string
-  rendererEmptySearchResult: () => JSX.Element | string
+  rendererRow?: RendererSingleDropdownRowCallback<T>
+  rendererEmptySearchResult?: () => JSX.Element | string
 
   children: JSX.Element | string
   className?: string
@@ -34,7 +36,9 @@ function SingleCombobox<OptionType>(props: Props<OptionType>): JSX.Element {
   const rowRenderer = useCallback((index: number): JSX.Element | string => {
     const isSelected: boolean = filteredList[index] === props.value
 
-    return props.rendererRow(filteredList, index, isSelected, setDropdownOpen)
+    return props.rendererRow
+      ? props.rendererRow(filteredList, index, isSelected, setDropdownOpen)
+      : defaultRendererSingleDropdownRow<OptionType>(props.onChange, props.rendererLabel)(filteredList, index, isSelected, setDropdownOpen)
   }, [filteredList, props]);
 
   const handleClose = useCallback((): void => {
@@ -42,6 +46,8 @@ function SingleCombobox<OptionType>(props: Props<OptionType>): JSX.Element {
   }, [])
 
   const handleWheelDown = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
+    if (!props.isWheelSelectionEnabled) return
+
     const idx = props.options.findIndex((el) => el === props.value)
 
     if (idx < props.options.length - 1) {
@@ -50,6 +56,8 @@ function SingleCombobox<OptionType>(props: Props<OptionType>): JSX.Element {
   }, [props]);
 
   const handleWheelUp = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
+    if (!props.isWheelSelectionEnabled) return
+
     const idx = props.options.findIndex((el) => el === props.value)
 
     if (idx > 0) {
@@ -87,7 +95,7 @@ function SingleCombobox<OptionType>(props: Props<OptionType>): JSX.Element {
       onChangeSearch={handleSearch}
       onClose={handleClose}
       searchValue={searchValue}
-      noSearchResult={props.rendererEmptySearchResult}
+      noSearchResult={props.rendererEmptySearchResult || defaultDropdownNoSearchResultRenderer}
     >
       {props.children}
     </ComboBox>

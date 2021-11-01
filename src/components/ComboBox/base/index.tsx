@@ -116,7 +116,7 @@ const ComboBox = (props: ComboBoxProps): JSX.Element => {
       {valueContainerRect && (
         <>
           {props.isOpen
-            ? <div style={{ height: valueContainerHeight, width: valueContainerRect.width }} />
+            ? <div style={{ height: valueContainerHeight }} />
             : valueBoxElement
           }
           {isOpen && ownerWindow && valueBoxElement && (

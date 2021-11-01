@@ -13,7 +13,7 @@ const StyledApp = styled.div`
 
 export default function App() {
   const stringOptions = useMemo<string[]>(() => generateData(randomInRange(10, 50)), []);
-  const options = useMemo<ParamNotation[]>(() => generateObjectData(randomInRange(10, 50)), []);
+  const options = useMemo<ParamNotation[]>(() => generateObjectData(randomInRange(1000, 2000)), []);
   // const options = useMemo<ParamNotation[]>(() => generateObjectData(1), []);
 
   const [paramSingleValue, setParamSingleValue] = useState<ParamNotation>(options[0])

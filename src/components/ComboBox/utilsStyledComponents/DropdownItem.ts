@@ -12,6 +12,8 @@ const DropdownItem = styled.div<{ selected?: boolean }>`
   display: flex;
   align-items: center;
   gap: 5px;
+  height: 30px;
+  box-sizing: border-box;
 
   ${({ selected }) => selected && HighlightMixin}
 

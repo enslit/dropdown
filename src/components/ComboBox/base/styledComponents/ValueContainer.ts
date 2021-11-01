@@ -26,6 +26,7 @@ const ValueContainer = styled.div<ComboBoxValueContainerProps>`
   position: relative;
   transition: background-color 200ms ease-in-out, border 200ms ease-in-out, color 200ms ease-in-out;
   border: 1px solid transparent;
+  box-sizing: border-box;
 
   @media screen and (max-width: 1199px) {
     z-index: 1;

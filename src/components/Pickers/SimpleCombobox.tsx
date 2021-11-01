@@ -1,6 +1,8 @@
 import React, {FC} from 'react'
 import SingleCombobox from "../ComboBox/SingleCombobox";
-import {RendererDropdownRowCallback} from "../ComboBox/types/RendererDropdownRowCallback";
+import {
+  RendererSingleDropdownRowCallback
+} from "../ComboBox/types/RendererSingleDropdownRowCallback";
 
 type Props = {
   initialOpen: boolean
@@ -16,7 +18,7 @@ type Props = {
 }
 
 const SimpleCombobox: FC<Props> = (props) => {
-  const rendererRow: RendererDropdownRowCallback<string> = (options, index, isSelected, setDropdownOpen) => {
+  const rendererRow: RendererSingleDropdownRowCallback<string> = (options, index, isSelected, setDropdownOpen) => {
     return (
       <div
         style={{ color: isSelected ? 'red' : 'black' }}
@@ -35,6 +37,7 @@ const SimpleCombobox: FC<Props> = (props) => {
   return (
     <SingleCombobox
       {...props}
+      isWheelSelectionEnabled={true}
       rowHeight={14}
       rendererRow={rendererRow}
       rendererLabel={rendererLabel}

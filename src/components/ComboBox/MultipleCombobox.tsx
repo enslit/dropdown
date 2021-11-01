@@ -1,6 +1,7 @@
 import React, {ChangeEvent, useCallback, useEffect, useState} from "react";
 import ComboBox from "./base";
-import {RendererDropdownRowCallback} from "./types/RendererDropdownRowCallback";
+import {RendererMultipleDropdownRowParams} from "./types/RendererMultipleDropdownRowParams";
+import {RendererMultipleDropdownRowCallback} from "./types/RendererMultipleDropdownRowCallback";
 
 type Props<T> = {
   initialOpen: boolean
@@ -13,7 +14,7 @@ type Props<T> = {
   options: T[]
   onChange: (value: T[]) => void
 
-  rendererRow: RendererDropdownRowCallback<T>
+  rendererRow: RendererMultipleDropdownRowCallback<T>
   rendererLabel: (value: T) => string
   rendererEmptySearchResult: () => JSX.Element | string
   rendererSelectAll: () => JSX.Element
@@ -34,7 +35,15 @@ function MultipleCombobox<OptionType>(props: Props<OptionType>) {
   const rowRenderer = useCallback((index: number): JSX.Element | string => {
     const isSelected: boolean = props.value.includes(filteredList[index])
 
-    return props.rendererRow(filteredList, index, isSelected, setDropdownOpen)
+    const params: RendererMultipleDropdownRowParams<OptionType> = {
+      currentValue: props.value,
+      filteredOptions: filteredList,
+      index,
+      isSelected,
+      setDropdownOpen,
+    }
+
+    return props.rendererRow(params)
   }, [filteredList, props]);
 
   const handleClose = useCallback(() => {

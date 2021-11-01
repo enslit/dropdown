@@ -28,4 +28,4 @@ export const generateObjectData = (cnt: number): ParamNotation[] => {
 
 export const randomInRange = (min: number, max: number): number => Math.round(min + Math.random() * (max - min))
 
-export const getParamLabel = (param: ParamNotation): string => `Параметр ${param.parameterId}`
+export const getParamLabel = (param: ParamNotation): string => `Параметр ${param?.parameterId}`;

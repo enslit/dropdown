@@ -9,7 +9,7 @@ type DropdownRootProps = HTMLAttributes<HTMLDivElement> & {
   valueContainerHeight: number;
   direction: "top" | "bottom";
   innerHeight: number
-  height: number | "auto";
+  dropdownHeight: number;
   top: number;
   left: number;
   width: number;
@@ -24,7 +24,7 @@ const DropdownRoot = styled.div<DropdownRootProps>`
   left: ${({ left }) => left}px;
   width: ${({ width }) => width}px;
   z-index: 2;
-  height: ${({ height, valueContainerHeight }) => (height === "auto" ? 'auto' : height - (valueContainerHeight / 2) + "px")};
+  height: ${({ dropdownHeight, valueContainerHeight }) => dropdownHeight - (valueContainerHeight / 2)}px;
   transition: height 200ms ease-in-out;
   
   @media screen and (min-width: 1199px) {
